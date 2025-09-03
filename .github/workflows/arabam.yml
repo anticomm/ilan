@@ -2,8 +2,8 @@ name: Arabam Scraper
 
 on:
   schedule:
-    - cron: '0 */3 * * *'
-  workflow_dispatch:
+    - cron: '0 */3 * * *'  # Her 3 saatte bir çalışır
+  workflow_dispatch:       # Manuel tetikleme
 
 jobs:
   run-scraper:
@@ -11,6 +11,7 @@ jobs:
     env:
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       CHAT_ID: ${{ secrets.CHAT_ID }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
     steps:
       - name: Repo'yu klonla
@@ -32,6 +33,7 @@ jobs:
         run: |
           git config --global user.name "Arabam"
           git config --global user.email "arabam@anticomm.com"
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/anticomm/ilan.git
           git add send_products.txt
           git diff --cached --quiet || git commit -m "Arabam scraper güncellemesi"
           git push
