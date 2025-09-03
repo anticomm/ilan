@@ -1,0 +1,33 @@
+name: Arabam Scraper
+
+on:
+  schedule:
+    - cron: '0 */3 * * *'  # Her 3 saatte bir çalışır
+  workflow_dispatch:
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repo'yu klonla
+        uses: actions/checkout@v3
+
+      - name: Python kur
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Bağımlılıkları yükle
+        run: |
+          pip install selenium webdriver-manager requests
+
+      - name: Scraper'ı çalıştır
+        run: python arabam_scraper.py
+
+      - name: Değişiklikleri commit et
+        run: |
+          git config --global user.name "Arabam Bot"
+          git config --global user.email "bot@arabam.com"
+          git add send_products.txt
+          git commit -m "Arabam scraper güncellemesi"
+          git push
