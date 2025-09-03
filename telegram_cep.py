@@ -1,37 +1,34 @@
-name: Arabam Scraper
+import os
+import requests
 
-on:
-  schedule:
-    - cron: '0 */3 * * *'
-  workflow_dispatch:
+TOKEN = os.getenv("BOT_TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
 
-jobs:
-  run-scraper:
-    runs-on: ubuntu-latest
-    env:
-      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      CHAT_ID: ${{ secrets.CHAT_ID }}
+def send_message(product):
+    title = product.get("title", "Başlık yok")
+    price = product.get("price", "Fiyat yok")
+    link = product.get("link", "")
+    image = product.get("image", "")
 
-    steps:
-      - name: Repo'yu klonla
-        uses: actions/checkout@v3
+    message = f"📢 {title}\n💰 {price}\n🔗 {link}"
 
-      - name: Python kur
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+    if not TOKEN or not CHAT_ID:
+        print("❌ Telegram token veya chat ID eksik.")
+        return
 
-      - name: Bağımlılıkları yükle
-        run: |
-          pip install selenium webdriver-manager requests
-
-      - name: Scraper'ı çalıştır
-        run: python arabam_scraper.py
-
-      - name: Değişiklikleri commit et
-        run: |
-          git config --global user.name "Arabam Bot"
-          git config --global user.email "bot@arabam.com"
-          git add send_products.txt
-          git commit -m "Arabam scraper güncellemesi"
-          git push
+    try:
+        response = requests.post(
+            f"https://api.telegram.org/bot{TOKEN}/sendPhoto",
+            data={
+                "chat_id": CHAT_ID,
+                "caption": message,
+                "photo": image,
+                "parse_mode": "HTML"
+            }
+        )
+        if response.status_code == 200:
+            print(f"✅ Gönderildi: {title}")
+        else:
+            print(f"❌ Telegram API hatası: {response.text}")
+    except Exception as e:
+        print(f"❌ Telegram gönderim hatası: {e}")
