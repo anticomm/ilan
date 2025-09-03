@@ -1,25 +1,37 @@
-import requests
-import os
+name: Arabam Scraper
 
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+on:
+  schedule:
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
 
-def send_message(product):
-    message = f"📢 {product['title']}\n💰 {product['price']}\n🔗 {product['link']}"
-    image_url = product['image']
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+    env:
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      CHAT_ID: ${{ secrets.CHAT_ID }}
 
-    if TOKEN and CHAT_ID:
-        url = f"https://api.telegram.org/bot{TOKEN}/sendPhoto"
-        data = {
-            "chat_id": CHAT_ID,
-            "caption": message,
-            "photo": image_url,
-            "parse_mode": "HTML"
-        }
-        try:
-            requests.post(url, data=data)
-            print(f"✅ Gönderildi: {product['title']}")
-        except Exception as e:
-            print(f"❌ Telegram gönderim hatası: {e}")
-    else:
-        print("❌ Telegram token veya chat ID eksik.")
+    steps:
+      - name: Repo'yu klonla
+        uses: actions/checkout@v3
+
+      - name: Python kur
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Bağımlılıkları yükle
+        run: |
+          pip install selenium webdriver-manager requests
+
+      - name: Scraper'ı çalıştır
+        run: python arabam_scraper.py
+
+      - name: Değişiklikleri commit et
+        run: |
+          git config --global user.name "Arabam Bot"
+          git config --global user.email "bot@arabam.com"
+          git add send_products.txt
+          git commit -m "Arabam scraper güncellemesi"
+          git push
