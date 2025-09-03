@@ -30,8 +30,8 @@ jobs:
 
       - name: Değişiklikleri commit et
         run: |
-          git config --global user.name "Arabam Bot"
-          git config --global user.email "bot@arabam.com"
+          git config --global user.name "Arabam"
+          git config --global user.email "arabam@anticomm.com"
           git add send_products.txt
-          git commit -m "Arabam scraper güncellemesi"
+          git diff --cached --quiet || git commit -m "Arabam scraper güncellemesi"
           git push
