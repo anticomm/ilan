@@ -2,12 +2,16 @@ name: Arabam Scraper
 
 on:
   schedule:
-    - cron: '0 */3 * * *'  # Her 3 saatte bir çalışır
+    - cron: '0 */3 * * *'
   workflow_dispatch:
 
 jobs:
   run-scraper:
     runs-on: ubuntu-latest
+    env:
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      CHAT_ID: ${{ secrets.CHAT_ID }}
+
     steps:
       - name: Repo'yu klonla
         uses: actions/checkout@v3
