@@ -18,7 +18,7 @@ jobs:
       - name: Repo'yu klonla
         uses: actions/checkout@v3
 
-      - name: Chrome ve ChromeDriver kur
+      - name: Chrome kur
         run: |
           sudo apt-get update
           sudo apt-get install -y wget unzip curl
@@ -26,16 +26,15 @@ jobs:
           sudo apt install -y ./google-chrome-stable_current_amd64.deb
           CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+')
           echo "✅ Chrome sürümü: $CHROME_VERSION"
-          DRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | grep -A 20 "\"version\": \"$CHROME_VERSION\"" | grep "chromedriver" | grep "linux64" | grep -oP 'https://[^"]+')
-          echo "✅ ChromeDriver URL: $DRIVER_URL"
-          wget "$DRIVER_URL" -O chromedriver_linux64.zip
+
+      - name: ChromeDriver indir (fallback ile)
+        run: |
+          DRIVER_VERSION="140.0.7339.80"
+          echo "⚙️ Manuel ChromeDriver sürümü: $DRIVER_VERSION"
+          wget "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$DRIVER_VERSION/linux64/chromedriver-linux64.zip" -O chromedriver_linux64.zip
           unzip chromedriver_linux64.zip || (echo "❌ Zip açılırken hata oluştu" && exit 1)
-          if [ -f chromedriver ]; then
-            sudo mv chromedriver /usr/bin/chromedriver
-          elif [ -f chromedriver-linux64/chromedriver ]; then
+          if [ -f chromedriver-linux64/chromedriver ]; then
             sudo mv chromedriver-linux64/chromedriver /usr/bin/chromedriver
-          elif [ -f chromedriver-linux64*/chromedriver ]; then
-            sudo mv chromedriver-linux64*/chromedriver /usr/bin/chromedriver
           else
             echo "❌ ChromeDriver bulunamadı, yapı değişmiş olabilir."
             exit 1
