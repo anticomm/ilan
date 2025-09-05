@@ -8,7 +8,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
 from telegram_cep import send_message
 
 URL = "https://www.arabam.com/ikinci-el/otomobil/bmw-fiyati-dusenler?minYear=2015&sort=startedAt.desc&take=50"
@@ -16,13 +15,13 @@ SENT_FILE = "send_products.txt"
 
 def get_driver():
     options = Options()
-    # Headless kapalı → tarayıcı görünür şekilde açılır
+    # Headless kapalı → test için görünür tarayıcı
     # options.add_argument("--headless=new")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--start-maximized")
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/115 Safari/537.36")
-    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    return webdriver.Chrome(service=Service("/usr/bin/chromedriver"), options=options)
 
 def inject_cookie_from_b64(driver):
     b64 = os.getenv("COOKIE_B64")
