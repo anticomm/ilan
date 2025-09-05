@@ -2,8 +2,8 @@ name: Arabam Scraper
 
 on:
   schedule:
-    - cron: '0 */3 * * *'  # Her 3 saatte bir çalışır
-  workflow_dispatch:       # Manuel tetikleme
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
 
 jobs:
   run-scraper:
@@ -18,14 +18,19 @@ jobs:
       - name: Repo'yu klonla
         uses: actions/checkout@v3
 
+      - name: ChromeDriver kur
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-chromedriver
+          sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
+
       - name: Python kur
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
       - name: Bağımlılıkları yükle
-        run: |
-          pip install selenium webdriver-manager requests
+        run: pip install selenium requests
 
       - name: Scraper'ı çalıştır
         run: python arabam_scraper.py
