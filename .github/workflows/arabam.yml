@@ -30,7 +30,14 @@ jobs:
           echo "✅ ChromeDriver URL: $DRIVER_URL"
           wget "$DRIVER_URL" -O chromedriver_linux64.zip
           unzip chromedriver_linux64.zip
-          sudo mv chromedriver-linux64/chromedriver /usr/bin/chromedriver
+          if [ -f chromedriver ]; then
+            sudo mv chromedriver /usr/bin/chromedriver
+          elif [ -f chromedriver-linux64/chromedriver ]; then
+            sudo mv chromedriver-linux64/chromedriver /usr/bin/chromedriver
+          else
+            echo "❌ ChromeDriver bulunamadı, yapı değişmiş olabilir."
+            exit 1
+          fi
           sudo chmod +x /usr/bin/chromedriver
 
       - name: Python kur
