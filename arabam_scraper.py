@@ -15,11 +15,15 @@ SENT_FILE = "send_products.txt"
 
 def get_driver():
     options = Options()
-    options.add_argument("--headless=new")
+    # Headless kapalı → görünür modda çalışır
+    # options.add_argument("--headless=new")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--remote-debugging-port=9222")
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option("useAutomationExtension", False)
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/115 Safari/537.36")
     return webdriver.Chrome(service=Service("/usr/bin/chromedriver"), options=options)
 
@@ -34,9 +38,6 @@ def inject_cookie_from_b64(driver):
     except Exception as e:
         print("❌ Base64 çözümleme hatası:", e)
         return
-
-    driver.get(URL)
-    time.sleep(2)
 
     for pair in raw.split(";"):
         if "=" in pair:
@@ -85,7 +86,13 @@ def extract_data_from_onclick(span):
 
 def run():
     driver = get_driver()
+
+    # Önce ana sayfaya git → cookie injection burada yapılmalı
+    driver.get("https://www.arabam.com")
+    time.sleep(2)
     inject_cookie_from_b64(driver)
+
+    # Sonra hedef URL'ye git
     driver.get(URL)
     time.sleep(5)
 
