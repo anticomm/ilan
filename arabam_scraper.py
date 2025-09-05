@@ -2,6 +2,7 @@ import os
 import re
 import time
 import base64
+import uuid
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -25,6 +26,11 @@ def get_driver():
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option("useAutomationExtension", False)
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/115 Safari/537.36")
+    
+    # Benzersiz profil klasörü → çakışmayı önler
+    unique_profile = f"/tmp/chrome-profile-{uuid.uuid4()}"
+    options.add_argument(f"--user-data-dir={unique_profile}")
+
     return webdriver.Chrome(service=Service("/usr/bin/chromedriver"), options=options)
 
 def inject_cookie_from_b64(driver):
