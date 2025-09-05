@@ -30,6 +30,8 @@ jobs:
         run: python arabam_scraper.py
 
       - name: Değişiklikleri commit et
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git config --global user.name "Arabam"
           git config --global user.email "arabam@anticomm.com"
