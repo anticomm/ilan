@@ -1,8 +1,8 @@
 import os
-import json
 import re
 import uuid
 import time
+import base64
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -25,6 +25,28 @@ def get_driver():
     options.add_argument(f"--user-data-dir=/tmp/chrome-profile-{profile_id}")
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/115 Safari/537.36")
     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+def inject_cookie_from_b64(driver):
+    b64 = os.getenv("COOKIE_B64")
+    if not b64:
+        print("❌ Base64 cookie bulunamadı.")
+        return
+
+    try:
+        raw = base64.b64decode(b64).decode("utf-8")
+    except Exception as e:
+        print("❌ Base64 çözümleme hatası:", e)
+        return
+
+    driver.get("https://www.arabam.com")
+    time.sleep(2)
+
+    for pair in raw.split(";"):
+        if "=" in pair:
+            name, value = pair.strip().split("=", 1)
+            driver.add_cookie({"name": name.strip(), "value": value.strip()})
+
+    print("✅ Cookie başarıyla enjekte edildi.")
 
 def load_sent_data():
     data = {}
@@ -73,6 +95,7 @@ def extract_data_from_onclick(span):
 
 def run():
     driver = get_driver()
+    inject_cookie_from_b64(driver)
     driver.get(URL)
     time.sleep(5)
 
