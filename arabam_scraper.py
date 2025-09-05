@@ -1,6 +1,5 @@
 import os
 import re
-import uuid
 import time
 import base64
 from selenium import webdriver
@@ -16,21 +15,19 @@ URL = "https://www.arabam.com/ikinci-el/otomobil/bmw-fiyati-dusenler?minYear=201
 SENT_FILE = "send_products.txt"
 
 def get_driver():
-    profile_id = str(uuid.uuid4())
     options = Options()
-    # Headless modu kapalı
+    # Headless kapalı → tarayıcı görünür şekilde açılır
     # options.add_argument("--headless=new")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--start-maximized")
-    options.add_argument(f"--user-data-dir=/tmp/chrome-profile-{profile_id}")
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/115 Safari/537.36")
     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 def inject_cookie_from_b64(driver):
     b64 = os.getenv("COOKIE_B64")
     if not b64:
-        print("❌ Base64 cookie bulunamadı.")
+        print("❌ COOKIE_B64 bulunamadı.")
         return
 
     try:
@@ -50,22 +47,15 @@ def inject_cookie_from_b64(driver):
     print("✅ Cookie başarıyla enjekte edildi.")
 
 def load_sent_data():
-    data = {}
-    if os.path.exists(SENT_FILE):
-        with open(SENT_FILE, "r", encoding="utf-8") as f:
-            for line in f:
-                parts = line.strip().split("|", 1)
-                if len(parts) == 2:
-                    ilan_id, price = parts
-                    data[ilan_id.strip()] = price.strip()
-    return data
+    if not os.path.exists(SENT_FILE):
+        return {}
+    with open(SENT_FILE, "r", encoding="utf-8") as f:
+        return dict(line.strip().split(" | ") for line in f if " | " in line)
 
 def save_sent_data(products_to_send):
     existing = load_sent_data()
     for product in products_to_send:
-        ilan_id = product['id'].strip()
-        price = product['price'].strip()
-        existing[ilan_id] = price
+        existing[product["id"].strip()] = product["price"].strip()
     with open(SENT_FILE, "w", encoding="utf-8") as f:
         for ilan_id, price in existing.items():
             f.write(f"{ilan_id} | {price}\n")
@@ -92,7 +82,7 @@ def extract_data_from_onclick(span):
         }
     except Exception as e:
         print("⚠️ Onclick parse hatası:", e)
-    return None
+        return None
 
 def run():
     driver = get_driver()
@@ -105,7 +95,7 @@ def run():
     print("🔍 Sayfa kaynak uzunluğu:", len(driver.page_source))
 
     try:
-        WebDriverWait(driver, 60).until(
+        WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "span.toolbox-item[id^='compare-container']"))
         )
     except:
@@ -116,11 +106,8 @@ def run():
     spans = driver.find_elements(By.CSS_SELECTOR, "span.toolbox-item[id^='compare-container']")
     print(f"🔍 {len(spans)} ilan bulundu.")
 
-    products = []
-    for span in spans:
-        data = extract_data_from_onclick(span)
-        if data:
-            products.append(data)
+    products = [extract_data_from_onclick(span) for span in spans]
+    products = [p for p in products if p]
 
     driver.quit()
 
@@ -132,9 +119,8 @@ def run():
         price = product["price"].strip()
 
         if ilan_id in sent_data:
-            old_price = sent_data[ilan_id]
-            if price != old_price:
-                print(f"📉 Fiyat değişti: {product['title']} → {old_price} → {price}")
+            if price != sent_data[ilan_id]:
+                print(f"📉 Fiyat değişti: {product['title']} → {sent_data[ilan_id]} → {price}")
                 products_to_send.append(product)
         else:
             print(f"🆕 Yeni ilan: {product['title']}")
