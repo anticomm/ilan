@@ -18,10 +18,11 @@ SENT_FILE = "send_products.txt"
 def get_driver():
     profile_id = str(uuid.uuid4())
     options = Options()
-    options.add_argument("--headless=new")
+    # Headless modu kapalı
+    # options.add_argument("--headless=new")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
-    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--start-maximized")
     options.add_argument(f"--user-data-dir=/tmp/chrome-profile-{profile_id}")
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/115 Safari/537.36")
     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
@@ -38,7 +39,7 @@ def inject_cookie_from_b64(driver):
         print("❌ Base64 çözümleme hatası:", e)
         return
 
-    driver.get("https://www.arabam.com")
+    driver.get(URL)
     time.sleep(2)
 
     for pair in raw.split(";"):
@@ -99,15 +100,16 @@ def run():
     driver.get(URL)
     time.sleep(5)
 
+    print("🔍 Sayfa başlığı:", driver.title)
+    print("🔍 Sayfa URL:", driver.current_url)
+    print("🔍 Sayfa kaynak uzunluğu:", len(driver.page_source))
+
     try:
         WebDriverWait(driver, 60).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "span.toolbox-item[id^='compare-container']"))
         )
     except:
         print("⚠️ Sayfa yüklenemedi.")
-        print("🔍 Sayfa başlığı:", driver.title)
-        print("🔍 Sayfa URL:", driver.current_url)
-        print("🔍 Sayfa kaynak uzunluğu:", len(driver.page_source))
         driver.quit()
         return
 
