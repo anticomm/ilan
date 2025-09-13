@@ -1,6 +1,5 @@
 import os
 import json
-import uuid
 import time
 import base64
 from selenium import webdriver
@@ -49,13 +48,11 @@ def load_cookies(driver):
             print(f"⚠️ Cookie eklenemedi: {cookie.get('name')} → {e}")
 
 def get_driver():
-    profile_id = str(uuid.uuid4())
     options = Options()
-    # options.add_argument("--headless")  # Test için kapalı bırak
+    options.add_argument("--headless")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--window-size=1920,1080")
-    options.add_argument(f"--user-data-dir=/tmp/chrome-profile-{profile_id}")
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/115 Safari/537.36")
     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
@@ -84,7 +81,6 @@ def get_price_from_detail(driver, url):
             text = el.text.strip()
             if "TL" in text and any(char.isdigit() for char in text):
                 return text
-
         return "Fiyat alınamadı"
     except Exception as e:
         print(f"⚠️ Detay sayfasından fiyat alınamadı: {e}")
