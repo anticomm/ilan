@@ -120,30 +120,34 @@ def run():
         driver.quit()
         return
 
-    products = []
     items = driver.find_elements(By.CSS_SELECTOR, "div[data-component-type='s-search-result']")
     print(f"🔍 {len(items)} ürün bulundu.")
 
-    for i in range(len(items)):
+    product_links = []
+    for item in items:
         try:
-            item = driver.find_elements(By.CSS_SELECTOR, "div[data-component-type='s-search-result']")[i]
             asin = item.get_attribute("data-asin")
             title = item.find_element(By.CSS_SELECTOR, "img.s-image").get_attribute("alt").strip()
             link = item.find_element(By.CSS_SELECTOR, "a.a-link-normal").get_attribute("href")
             image = item.find_element(By.CSS_SELECTOR, "img.s-image").get_attribute("src")
-
-            # Fiyatı detay sayfadan al
-            price = get_price_from_detail(driver, link)
-
-            products.append({
+            product_links.append({
                 "asin": asin,
                 "title": title,
-                "price": price,
-                "image": image,
-                "link": link
+                "link": link,
+                "image": image
             })
         except Exception as e:
-            print("⚠️ Ürün parse hatası:", e)
+            print("⚠️ Listeleme parse hatası:", e)
+            continue
+
+    products = []
+    for product in product_links:
+        try:
+            price = get_price_from_detail(driver, product["link"])
+            product["price"] = price
+            products.append(product)
+        except Exception as e:
+            print("⚠️ Detay sayfa hatası:", e)
             continue
 
     driver.quit()
