@@ -56,19 +56,6 @@ def get_driver():
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/115 Safari/537.36")
     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-def extract_price(item):
-    try:
-        whole = item.find_element(By.CSS_SELECTOR, ".a-price-whole").text.strip()
-        fraction = item.find_element(By.CSS_SELECTOR, ".a-price-fraction").text.strip()
-        return f"{whole},{fraction} TL"
-    except:
-        pass
-    try:
-        price_el = item.find_element(By.CSS_SELECTOR, ".a-price .a-offscreen")
-        return price_el.text.strip()
-    except:
-        return "Fiyat alınamadı"
-
 def get_price_from_detail(driver, url):
     try:
         driver.get(url)
@@ -133,19 +120,20 @@ def run():
         driver.quit()
         return
 
+    products = []
     items = driver.find_elements(By.CSS_SELECTOR, "div[data-component-type='s-search-result']")
     print(f"🔍 {len(items)} ürün bulundu.")
 
-    products = []
-    for item in items:
+    for i in range(len(items)):
         try:
+            item = driver.find_elements(By.CSS_SELECTOR, "div[data-component-type='s-search-result']")[i]
             asin = item.get_attribute("data-asin")
             title = item.find_element(By.CSS_SELECTOR, "img.s-image").get_attribute("alt").strip()
             link = item.find_element(By.CSS_SELECTOR, "a.a-link-normal").get_attribute("href")
-            price = extract_price(item)
-            if price == "Fiyat alınamadı":
-                price = get_price_from_detail(driver, link)
             image = item.find_element(By.CSS_SELECTOR, "img.s-image").get_attribute("src")
+
+            # Fiyatı detay sayfadan al
+            price = get_price_from_detail(driver, link)
 
             products.append({
                 "asin": asin,
