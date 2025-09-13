@@ -51,7 +51,7 @@ def load_cookies(driver):
 def get_driver():
     profile_id = str(uuid.uuid4())
     options = Options()
-    options.add_argument("--headless")
+    # options.add_argument("--headless")  # Test için kapalı bırak
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--window-size=1920,1080")
@@ -77,23 +77,14 @@ def get_price_from_detail(driver, url):
         driver.execute_script("window.open(arguments[0]);", url)
         driver.switch_to.window(driver.window_handles[-1])
         WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.CSS_SELECTOR, "body")))
-        time.sleep(2)
+        time.sleep(3)
 
-        selectors = [
-            "#apex_price .aok-offscreen",
-            "#priceblock_ourprice",
-            "#priceblock_dealprice",
-            "#priceblock_saleprice",
-            ".a-price .a-offscreen"
-        ]
-        for selector in selectors:
-            try:
-                el = driver.find_element(By.CSS_SELECTOR, selector)
-                text = el.text.strip()
-                if "TL" in text and any(char.isdigit() for char in text):
-                    return text
-            except:
-                continue
+        price_elements = driver.find_elements(By.CSS_SELECTOR, ".aok-offscreen")
+        for el in price_elements:
+            text = el.text.strip()
+            if "TL" in text and any(char.isdigit() for char in text):
+                return text
+
         return "Fiyat alınamadı"
     except Exception as e:
         print(f"⚠️ Detay sayfasından fiyat alınamadı: {e}")
