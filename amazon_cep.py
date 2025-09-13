@@ -71,20 +71,17 @@ def extract_price(item):
 
 def get_price_from_detail(driver, url):
     try:
-        driver.execute_script("window.open(arguments[0]);", url)
-        driver.switch_to.window(driver.window_handles[-1])
+        driver.get(url)
         WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.CSS_SELECTOR, "body")))
         time.sleep(2)
 
-        # Varyasyon input'una tıkla (eğer varsa)
         try:
             variant_input = driver.find_element(By.CSS_SELECTOR, "input.a-button-input[aria-checked='true']")
             driver.execute_script("arguments[0].click();", variant_input)
             time.sleep(2)
         except:
-            pass  # Varyasyon zaten seçili olabilir
+            pass
 
-        # Fiyatı çek
         price_elements = driver.find_elements(By.CSS_SELECTOR, ".aok-offscreen")
         for el in price_elements:
             text = el.text.strip()
@@ -95,9 +92,6 @@ def get_price_from_detail(driver, url):
     except Exception as e:
         print(f"⚠️ Detay sayfasından fiyat alınamadı: {e}")
         return "Fiyat alınamadı"
-    finally:
-        driver.close()
-        driver.switch_to.window(driver.window_handles[0])
 
 def load_sent_data():
     data = {}
