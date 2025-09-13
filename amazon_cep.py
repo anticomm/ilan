@@ -142,7 +142,7 @@ def run():
         try:
             asin = item.get_attribute("data-asin")
             title = item.find_element(By.CSS_SELECTOR, "img.s-image").get_attribute("alt").strip()
-            link = item.find_element(By.CSS_SELECTOR, "a.a-link-normal").getAttribute("href")
+            link = item.find_element(By.CSS_SELECTOR, "a.a-link-normal").getattribute("href")
             price = extract_price(item)
             if price == "Fiyat alınamadı":
                 price = get_price_from_detail(driver, link)
