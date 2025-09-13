@@ -35,10 +35,8 @@ def load_cookies(driver):
     if not os.path.exists(COOKIE_FILE):
         print("❌ Cookie dosyası eksik.")
         return
-
     with open(COOKIE_FILE, "r", encoding="utf-8") as f:
         cookies = json.load(f)
-
     for cookie in cookies:
         try:
             driver.add_cookie({
@@ -78,6 +76,23 @@ def extract_price(item):
         except:
             continue
     return "Fiyat alınamadı"
+
+def get_price_from_detail(driver, url):
+    try:
+        driver.execute_script("window.open(arguments[0]);", url)
+        driver.switch_to.window(driver.window_handles[-1])
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".a-price .a-offscreen"))
+        )
+        price_el = driver.find_element(By.CSS_SELECTOR, ".a-price .a-offscreen")
+        price = price_el.text.strip()
+    except Exception as e:
+        print(f"⚠️ Detay sayfasından fiyat alınamadı: {e}")
+        price = "Fiyat alınamadı"
+    finally:
+        driver.close()
+        driver.switch_to.window(driver.window_handles[0])
+    return price
 
 def load_sent_data():
     data = {}
@@ -127,9 +142,11 @@ def run():
         try:
             asin = item.get_attribute("data-asin")
             title = item.find_element(By.CSS_SELECTOR, "img.s-image").get_attribute("alt").strip()
+            link = item.find_element(By.CSS_SELECTOR, "a.a-link-normal").getAttribute("href")
             price = extract_price(item)
+            if price == "Fiyat alınamadı":
+                price = get_price_from_detail(driver, link)
             image = item.find_element(By.CSS_SELECTOR, "img.s-image").get_attribute("src")
-            link = item.find_element(By.CSS_SELECTOR, "a.a-link-normal").get_attribute("href")
 
             products.append({
                 "asin": asin,
