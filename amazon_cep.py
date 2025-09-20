@@ -132,6 +132,10 @@ def run():
     product_links = []
     for item in items:
         try:
+            # Sponsorlu ürün kontrolü
+            if item.find_elements(By.XPATH, ".//span[contains(text(), 'Sponsorlu')]"):
+                continue  # sponsorluysa atla
+
             asin = item.get_attribute("data-asin")
             title = item.find_element(By.CSS_SELECTOR, "img.s-image").get_attribute("alt").strip()
             link = item.find_element(By.CSS_SELECTOR, "a.a-link-normal").get_attribute("href")
