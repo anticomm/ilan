@@ -2,7 +2,7 @@ name: Amazon Elektronik Scraper
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # Her 5 dakikada bir çalışır
+    - cron: '*/3 * * * *'  # Her 3 dakikada bir çalışır
   workflow_dispatch:
 
 permissions:
