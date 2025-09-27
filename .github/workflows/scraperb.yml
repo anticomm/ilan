@@ -51,4 +51,4 @@ jobs:
           curl -X POST \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             https://api.github.com/repos/anticomm/ilan/actions/workflows/scraperc.yml/dispatches \
-            -d '{"ref":"master"}'
+            -d '{"ref":"main"}'
