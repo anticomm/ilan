@@ -11,7 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from telegram_cep import send_message
 
-URL = "https://www.amazon.com.tr/s?k=cep+telefonu&i=electronics&bbn=44219324031&rh=n%3A12466496031%2Cn%3A44219324031%2Cn%3A13709880031%2Cn%3A13709907031&dc&ds=v1%3Ao3wK9%2BtH2ydlPEccHo%2BawbOgbFDesNYTKpFZayfpYvw&__mk_tr_TR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=26762L8QXN1MQ&qid=1758998248&rnid=13709880031&sprefix=cep+telefonu%2Cwarehouse-deals%2C234&ref=sr_nr_n_35978031%2Cp_6%3AA1UNQM1SR2CHM%257CA215JX4S9CANSO&dc&ds=v1%3A6iwARYk%2BRRi8kEeaA7TzLD9L7Vjp9PprtvbRXt8zH%2Bo"
+URL = "https://www.amazon.com.tr/s?k=cep+telefonu&i=electronics&bbn=44219324031&rh=n%3A12466496031%2Cn%3A44219324031%2Cn%3A13709880031%2Cn%3A13709907031&dc&ds=v1%3Ao3wK9%2BtH2ydlPEccHo%2BawbOgbFDesNYTKpFZayfpYvw&__mk_tr_TR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=26762L8QXN1MQ&qid=1758998248&rnid=13709880031&sprefix=cep+telefonu%2Cwarehouse-deals%2C234&ref=sr_nr_n_3c&ds=v1%3Akd2gTdDOjFaG5Z2QrlIQ2wJNDiArB3lo9W1HIcxOyB8&__mk_tr_TR=%C3%85M%C3%85%C5%BD%C3%95%C3%91"
 COOKIE_FILE = "cookie_cep.json"
 SENT_FILE = "send_products.txt"
 
