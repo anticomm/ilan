@@ -103,6 +103,7 @@ def get_used_price_from_detail(driver):
         return None
 
 def get_final_price(driver, link):
+    check_timeout()
     try:
         driver.execute_script("window.open('');")
         driver.switch_to.window(driver.window_handles[1])
@@ -145,6 +146,7 @@ def run():
 
     driver = get_driver()
     check_timeout()
+
     driver.get(URL)
     time.sleep(2)
     load_cookies(driver)
@@ -245,4 +247,7 @@ def run():
         print("⚠️ Yeni veya indirimli ürün bulunamadı.")
 
 if __name__ == "__main__":
-    run()
+    try:
+        run()
+    except TimeoutError as e:
+        print(f"⏹️ Zincir durduruldu: {e}")
