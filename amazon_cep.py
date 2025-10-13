@@ -65,7 +65,7 @@ def check_timeout():
             print("📡 Scraper B tetiklendi.")
         except Exception as e:
             print(f"❌ Scraper B tetiklenemedi: {e}")
-        exit()
+        raise TimeoutError("Zincir süresi doldu")
 def get_driver():
     check_timeout()
     options = Options()
