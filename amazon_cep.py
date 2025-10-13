@@ -144,9 +144,11 @@ def run():
         return
 
     driver = get_driver()
+    check_timeout()
     driver.get(URL)
     time.sleep(2)
     load_cookies(driver)
+    check_timeout()
     driver.get(URL)
     try:
         WebDriverWait(driver, 35).until(
