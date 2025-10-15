@@ -51,7 +51,7 @@ def load_cookies(driver):
         except Exception as e:
             print(f"⚠️ Cookie eklenemedi: {cookie.get('name')} → {e}")
 def check_timeout():
-    if time.time() - start > 180:
+    if time.time() - start > 119:
         print("⏱️ Süre doldu, zincir devam ediyor.")
         try:
             requests.post(
