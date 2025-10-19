@@ -57,7 +57,7 @@ jobs:
           git config --global user.email "actions@github.com"
           git add send_products.txt
           git commit -m "Scraper B → Fiyat güncellemesi" || echo "⏩ Değişiklik yok"
-          git pull origin master --rebase || echo "⏩ Pull başarısız, devam ediliyor"
+          git pull origin main --rebase || echo "⏩ Pull başarısız, devam ediliyor"
           git push || echo "⏩ Push başarısız ama zincir devam ediyor"
 
       - name: 30 saniye bekle
@@ -68,4 +68,4 @@ jobs:
           curl -X POST \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             https://api.github.com/repos/anticomm/ilan/actions/workflows/scraperc.yml/dispatches \
-            -d '{"ref":"master"}' || echo "⚠️ Scraper C tetiklenemedi ama zincir devam ediyor"
+            -d '{"ref":"main"}' || echo "⚠️ Scraper C tetiklenemedi ama zincir devam ediyor"
