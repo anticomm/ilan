@@ -36,7 +36,6 @@ def format_product_message(product):
         f"{teknik}\n"
         f"{f'🎨 Renkler: {renkler}' if renkler else ''}\n"
         f"{fiyat_bilgisi}\n"
-        f"🔗 [🔥🔥 FIRSATA GİT 🔥🔥]({link})"
     )
 
 def send_message(product):
