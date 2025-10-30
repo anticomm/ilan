@@ -1,5 +1,6 @@
 import os
 import requests
+import json
 
 def format_product_message(product):
     title = product.get("title", "🛍️ Ürün adı bulunamadı")
@@ -49,21 +50,31 @@ def send_message(product):
 
     message = format_product_message(product)
     image_url = product.get("image")
+    asin = product.get("asin")
+    link = f"https://www.amazon.com.tr/dp/{asin}" if asin else product.get("link", "#")
 
     try:
+        reply_markup = json.dumps({
+            "inline_keyboard": [[
+                {"text": "🛍️AÇ", "url": link}
+            ]]
+        })
+
         if image_url and image_url.startswith("http"):
             payload = {
                 "chat_id": chat_id,
                 "photo": image_url,
                 "caption": message,
-                "parse_mode": "Markdown"
+                "parse_mode": "Markdown",
+                "reply_markup": reply_markup
             }
             response = requests.post(f"{base_url}/sendPhoto", data=payload)
         else:
             payload = {
                 "chat_id": chat_id,
                 "text": message,
-                "parse_mode": "Markdown"
+                "parse_mode": "Markdown",
+                "reply_markup": reply_markup
             }
             response = requests.post(f"{base_url}/sendMessage", data=payload)
 
